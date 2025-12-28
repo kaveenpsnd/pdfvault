@@ -33,16 +33,23 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
     
     /* Main styling */
+    .stApp {
+        background-color: #09262e;
+    }
+    
     .main {
         background-color: #09262e;
         padding: 2rem;
         font-family: 'Poppins', sans-serif;
     }
     
-    /* Hide default Streamlit elements */
+    /* Hide Streamlit Branding - Premium Look */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    .stDeployButton {display: none;}
+    [data-testid="stToolbar"] {visibility: hidden !important;}
+    [data-testid="stDecoration"] {display: none;}
     
     /* Search bar styling */
     .stTextInput>div>div>input {
