@@ -144,16 +144,18 @@ st.markdown("""
     }
     
     .pdf-name {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
         font-size: 16px;
         color: #09262e;
         text-align: center;
         margin-bottom: 15px;
-        line-height: 1.3;
-        min-height: 40px;
+        line-height: 1.5;
+        min-height: 80px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 5;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -445,10 +447,8 @@ def main():
                 file_id = str(row['File ID'])
                 match_score = row.get('Match Score', 0)
                 
-                # Clean filename for display (remove extension, format)
-                display_name = file_name.replace('.pdf', '').replace('_', ' ').replace('-', ' ').title()
-                if len(display_name) > 50:
-                    display_name = display_name[:47] + "..."
+                # Show full filename (formatted for readability)
+                display_name = file_name.replace('_', ' ').replace('-', ' ')
                 
                 # Determine which column to use
                 col_idx = idx % num_cols
