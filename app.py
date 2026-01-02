@@ -241,24 +241,61 @@ def fuzzy_search(query, df, limit=20):
     query_lower = normalize_text(query)
     query_words = query_lower.split()
     
+    # Extract year patterns from query
+    query_years = set(re.findall(r'\b(19\d{2}|20\d{2})\b', query))
+    
+    # Extract key terms (subjects, mediums, levels)
+    subjects = ['physics', 'chemistry', 'biology', 'mathematics', 'maths', 'combined', 'commerce', 'history', 'geography', 'economics', 'accounting', 'english', 'sinhala', 'tamil', 'science', 'ict', 'technology']
+    mediums = ['sinhala', 'tamil', 'english']
+    levels = ['al', 'ol', 'grade']
+    
+    query_subjects = [word for word in query_words if word in subjects]
+    query_mediums = [word for word in query_words if word in mediums]
+    query_levels = [word for word in query_words if word in levels]
+    
     # Calculate scores
     scored_results = []
     for idx, row in df.iterrows():
         filename = str(row[file_name_col])
         filename_lower = normalize_text(filename)
         
-        # Token sort ratio for fuzzy matching
-        score = fuzz.token_sort_ratio(query_lower, filename_lower)
+        # Extract years from filename
+        file_years = set(re.findall(r'\b(19\d{2}|20\d{2})\b', filename_lower))
         
-        # Boost score for exact word matches
+        # Start with base fuzzy score
+        score = fuzz.token_sort_ratio(query_lower, filename_lower) * 0.5
+        
+        # CRITICAL: Year matching - if query has a year, it MUST match
+        if query_years:
+            if file_years & query_years:  # Intersection: year matches
+                score += 50  # Huge boost for year match
+            else:
+                score = score * 0.2  # Massive penalty for year mismatch
+        
+        # Boost for subject matches
+        for subject in query_subjects:
+            if subject in filename_lower:
+                score += 25
+        
+        # Boost for medium matches
+        for medium in query_mediums:
+            if medium in filename_lower:
+                score += 20
+        
+        # Boost for level matches
+        for level in query_levels:
+            if level in filename_lower:
+                score += 15
+        
+        # Boost for exact word matches
         word_matches = sum(1 for word in query_words if word in filename_lower)
         if word_matches > 0:
-            score += (word_matches / len(query_words)) * 30
+            score += (word_matches / len(query_words)) * 15
         
         # Cap score at 100
         score = min(score, 100)
         
-        if score >= 30:  # Minimum threshold
+        if score >= 40:  # Increased minimum threshold
             scored_results.append({
                 'index': idx,
                 'score': score,
