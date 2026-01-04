@@ -216,6 +216,9 @@ def normalize_text(text):
     text = re.sub(r'\ba/l\b', 'al', text, flags=re.IGNORECASE)
     text = re.sub(r'\ba\s*l\b', 'al', text, flags=re.IGNORECASE)
     text = re.sub(r'\badvanced?\s+level\b', 'al', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bo/l\b', 'ol', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bo\s*l\b', 'ol', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bordinary\s+level\b', 'ol', text, flags=re.IGNORECASE)
     # Replace separators with spaces
     text = re.sub(r'[_\-\.,;:()\[\]{}]', ' ', text)
     # Normalize multiple spaces
@@ -223,8 +226,8 @@ def normalize_text(text):
     return text.strip()
 
 
-def fuzzy_search(query, df, limit=20):
-    """Perform intelligent fuzzy search with relevance-based scoring."""
+def fuzzy_search(query, df, limit=50):
+    """Perform intelligent fuzzy search with PRIORITY: Subject > Year > Medium > Type > Word Count."""
     if df.empty or query.strip() == "":
         return pd.DataFrame()
     
@@ -239,70 +242,110 @@ def fuzzy_search(query, df, limit=20):
         file_name_col = df.columns[0]
     
     query_lower = normalize_text(query)
-    query_words = query_lower.split()
+    query_words = set(query_lower.split())
     
     # Extract year patterns from query
     query_years = set(re.findall(r'\b(19\d{2}|20\d{2})\b', query))
     
-    # Extract key terms (subjects, mediums, levels)
-    subjects = ['physics', 'chemistry', 'biology', 'mathematics', 'maths', 'combined', 'commerce', 'history', 'geography', 'economics', 'accounting', 'english', 'sinhala', 'tamil', 'science', 'ict', 'technology']
+    # Define categories with priority weights
+    subjects = ['physics', 'chemistry', 'biology', 'mathematics', 'maths', 'combined', 'commerce', 'history', 'geography', 'economics', 'accounting', 'english', 'sinhala', 'tamil', 'science', 'ict', 'technology', 'buddhism', 'hinduism', 'islam', 'christianity', 'art', 'music', 'drama', 'dancing', 'agriculture', 'business']
     mediums = ['sinhala', 'tamil', 'english']
     levels = ['al', 'ol', 'grade']
+    doc_types = ['marking', 'scheme', 'paper', 'pastpaper', 'past']
     
-    query_subjects = [word for word in query_words if word in subjects]
-    query_mediums = [word for word in query_words if word in mediums]
-    query_levels = [word for word in query_words if word in levels]
+    # Extract query components
+    query_subjects = set([word for word in query_words if word in subjects])
+    query_mediums = set([word for word in query_words if word in mediums])
+    query_levels = set([word for word in query_words if word in levels])
+    query_doc_types = set([word for word in query_words if word in doc_types])
     
-    # Calculate scores
+    # Calculate scores with PRIORITY SYSTEM
     scored_results = []
     for idx, row in df.iterrows():
         filename = str(row[file_name_col])
         filename_lower = normalize_text(filename)
+        filename_words = set(filename_lower.split())
         
-        # Extract years from filename
+        # Extract components from filename
         file_years = set(re.findall(r'\b(19\d{2}|20\d{2})\b', filename_lower))
+        file_subjects = set([word for word in filename_words if word in subjects])
+        file_mediums = set([word for word in filename_words if word in mediums])
+        file_levels = set([word for word in filename_words if word in levels])
+        file_doc_types = set([word for word in filename_words if word in doc_types])
         
-        # Start with base fuzzy score
-        score = fuzz.token_sort_ratio(query_lower, filename_lower) * 0.5
+        # ===== PRIORITY SCORING SYSTEM =====
+        # Using multiplicative weights for strong priority enforcement
         
-        # CRITICAL: Year matching - if query has a year, it MUST match
+        # 1. SUBJECT MATCH (HIGHEST PRIORITY) - Weight: 10000
+        subject_score = 0
+        if query_subjects:
+            matching_subjects = query_subjects & file_subjects
+            if matching_subjects:
+                subject_score = 10000 * (len(matching_subjects) / len(query_subjects))
+        
+        # 2. YEAR MATCH (SECOND PRIORITY) - Weight: 1000
+        year_score = 0
         if query_years:
-            if file_years & query_years:  # Intersection: year matches
-                score += 50  # Huge boost for year match
-            else:
-                score = score * 0.2  # Massive penalty for year mismatch
+            if file_years & query_years:  # Exact year match
+                year_score = 1000
+            elif file_years:  # Different year
+                # Calculate year proximity (closer years get higher scores)
+                query_year = int(list(query_years)[0])
+                closest_file_year = min(file_years, key=lambda y: abs(int(y) - query_year))
+                year_diff = abs(int(closest_file_year) - query_year)
+                year_score = max(0, 1000 - (year_diff * 100))  # 100 points penalty per year difference
         
-        # Boost for subject matches
-        for subject in query_subjects:
-            if subject in filename_lower:
-                score += 25
+        # 3. MEDIUM MATCH (THIRD PRIORITY) - Weight: 100
+        medium_score = 0
+        if query_mediums:
+            matching_mediums = query_mediums & file_mediums
+            if matching_mediums:
+                medium_score = 100 * (len(matching_mediums) / len(query_mediums))
         
-        # Boost for medium matches
-        for medium in query_mediums:
-            if medium in filename_lower:
-                score += 20
+        # 4. DOCUMENT TYPE MATCH (FOURTH PRIORITY) - Weight: 10
+        doc_type_score = 0
+        if query_doc_types:
+            matching_types = query_doc_types & file_doc_types
+            if matching_types:
+                doc_type_score = 10 * (len(matching_types) / len(query_doc_types))
         
-        # Boost for level matches
-        for level in query_levels:
-            if level in filename_lower:
-                score += 15
+        # 5. LEVEL MATCH - Weight: 5
+        level_score = 0
+        if query_levels:
+            matching_levels = query_levels & file_levels
+            if matching_levels:
+                level_score = 5 * (len(matching_levels) / len(query_levels))
         
-        # Boost for exact word matches
-        word_matches = sum(1 for word in query_words if word in filename_lower)
-        if word_matches > 0:
-            score += (word_matches / len(query_words)) * 15
+        # 6. OVERALL WORD MATCH COUNT - Weight: 1
+        common_words = query_words & filename_words
+        word_match_score = len(common_words)
         
-        # Cap score at 100
-        score = min(score, 100)
+        # 7. BASE FUZZY SCORE (normalized to 0-1 range)
+        fuzzy_score = fuzz.token_sort_ratio(query_lower, filename_lower) / 100.0
         
-        if score >= 40:  # Increased minimum threshold
+        # TOTAL SCORE with clear priority hierarchy
+        total_score = (
+            subject_score +      # 10000 scale
+            year_score +         # 1000 scale
+            medium_score +       # 100 scale
+            doc_type_score +     # 10 scale
+            level_score +        # 5 scale
+            word_match_score +   # 1 scale
+            fuzzy_score          # 0-1 scale
+        )
+        
+        # Only include results with some relevance
+        if total_score > 5 or (query_subjects and subject_score > 0):
             scored_results.append({
                 'index': idx,
-                'score': score,
-                'filename': filename
+                'score': total_score,
+                'filename': filename,
+                'subject_score': subject_score,
+                'year_score': year_score,
+                'medium_score': medium_score
             })
     
-    # Sort by score
+    # Sort by total score (automatically prioritizes subject > year > medium > type)
     scored_results.sort(key=lambda x: x['score'], reverse=True)
     top_results = scored_results[:limit]
     
@@ -313,9 +356,14 @@ def fuzzy_search(query, df, limit=20):
     top_indices = [r['index'] for r in top_results]
     results = df.loc[top_indices].copy()
     
-    # Add match scores
+    # Add match scores for display
     score_dict = {r['filename']: r['score'] for r in top_results}
     results['Match Score'] = results[file_name_col].map(score_dict)
+    
+    # Normalize display score to 0-100 for better UX
+    max_score = results['Match Score'].max() if not results.empty else 1
+    results['Match Score'] = (results['Match Score'] / max_score * 100).round(1)
+    
     results = results.sort_values('Match Score', ascending=False)
     
     return results
@@ -429,7 +477,8 @@ def main():
     
     # Display results
     if st.session_state.search_query:
-        results = fuzzy_search(st.session_state.search_query, df, limit=6)
+        with st.spinner('🔍 Searching for your past papers... Please wait'):
+            results = fuzzy_search(st.session_state.search_query, df, limit=30)
 
         if not results.empty:
             file_name_col = [col for col in results.columns if 'file' in col.lower() and 'name' in col.lower()]
