@@ -161,23 +161,27 @@ st.markdown("""
             padding: 0.3rem;
         }
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
         .pdf-tile {
             margin: 4px 0;
             padding: 10px;
         }
-        /* Smaller title on mobile */
+        /* Mobile title - bigger font */
         .vault-title {
-            font-size: 1.5rem !important;
+            font-size: 2rem !important;
             letter-spacing: 1px !important;
-            margin-bottom: 0.2rem !important;
+            margin-bottom: 0.1rem !important;
+            margin-top: 0 !important;
         }
         .vault-subtitle {
             font-size: 0.75rem !important;
+            margin-bottom: 0 !important;
         }
         .title-container {
-            margin-bottom: 0.5rem !important;
+            margin-bottom: 0.4rem !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
         /* Hide native banner on mobile - show later */
         .native-banner-desktop {
@@ -256,7 +260,21 @@ st.markdown("""
     /* Reduce top padding on mobile */
     @media (max-width: 768px) {
         .main .block-container {
-            padding-top: 0.5rem !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        /* Remove Streamlit default top spacing */
+        .stApp > header {
+            display: none !important;
+        }
+        .stApp {
+            margin-top: 0 !important;
+        }
+        [data-testid="stAppViewContainer"] {
+            padding-top: 0 !important;
+        }
+        [data-testid="stHeader"] {
+            display: none !important;
         }
     }
     </style>
