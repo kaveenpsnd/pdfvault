@@ -427,7 +427,8 @@ def main():
     """, unsafe_allow_html=True)
     
     # Native Banner Ad
-    st.markdown("""
+    import streamlit.components.v1 as components
+    components.html("""
     <div style="text-align: center; margin: 1.5rem auto; max-width: 100%;">
         <script>
           atOptions = {
@@ -440,7 +441,7 @@ def main():
         </script>
         <script src="https://levitydinerdowny.com/8147f01382ece9e1740ef1187319a8b7/invoke.js"></script>
     </div>
-    """, unsafe_allow_html=True)
+    """, height=120)
     
     # Check for bot token
     try:
@@ -608,11 +609,12 @@ def main():
             st.metric("Status", "🟢 Active")
     
     # Social Bar Ad at bottom
-    st.markdown("""
-    <div style="text-align: center; margin-top: 3rem;">
+    import streamlit.components.v1 as components
+    components.html("""
+    <div style="text-align: center; margin-top: 1rem;">
         <script src="https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js"></script>
     </div>
-    """, unsafe_allow_html=True)
+    """, height=80)
 
 
 if __name__ == "__main__":
