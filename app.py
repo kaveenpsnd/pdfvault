@@ -158,53 +158,123 @@ st.markdown("""
     
     @media (max-width: 768px) {
         .main {
-            padding: 0.5rem;
+            padding: 0.3rem;
         }
         h1 {
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
         .pdf-tile {
-            margin: 5px;
-            padding: 15px;
+            margin: 4px 0;
+            padding: 10px;
+        }
+        /* Smaller title on mobile */
+        .vault-title {
+            font-size: 1.5rem !important;
+            letter-spacing: 1px !important;
+            margin-bottom: 0.2rem !important;
+        }
+        .vault-subtitle {
+            font-size: 0.75rem !important;
+        }
+        .title-container {
+            margin-bottom: 0.5rem !important;
+        }
+        /* Hide native banner on mobile - show later */
+        .native-banner-desktop {
+            display: none !important;
+        }
+        /* Smaller PDF icon on mobile */
+        .pdf-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+        .pdf-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        /* Smaller filename text on mobile */
+        .pdf-name {
+            font-size: 12px;
+            min-height: 30px;
+            margin-bottom: 4px;
+        }
+        /* Welcome text smaller on mobile */
+        .welcome-text {
+            padding: 1rem 0.5rem !important;
+        }
+        .welcome-text h2 {
+            font-size: 1.3rem !important;
+        }
+        .welcome-text p {
+            font-size: 0.9rem !important;
+            margin-bottom: 1rem !important;
+        }
+        /* No results text smaller */
+        .no-results {
+            padding: 1rem 0.5rem !important;
+        }
+        .no-results h2 {
+            font-size: 1.3rem !important;
+        }
+        .no-results p {
+            font-size: 0.9rem !important;
+        }
+        /* Reduce button font size */
+        .stButton>button {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+        /* Search input smaller */
+        .stTextInput>div>div>input {
+            font-size: 14px;
+            padding: 8px;
+        }
+        /* Reduce column gaps */
+        .stColumns {
+            gap: 0.3rem !important;
+        }
+        /* Match score badge smaller */
+        .match-badge {
+            font-size: 10px !important;
+            padding: 2px 6px !important;
+        }
+    }
+    
+    /* Show banner on desktop */
+    @media (min-width: 769px) {
+        .native-banner-mobile {
+            display: none !important;
         }
     }
     
     /* Space for fixed social bar at bottom */
     .main .block-container {
-        padding-bottom: 80px !important;
+        padding-bottom: 70px !important;
     }
     
     /* Reduce top padding on mobile */
     @media (max-width: 768px) {
         .main .block-container {
-            padding-top: 1rem !important;
+            padding-top: 0.5rem !important;
         }
     }
     </style>
+    
+    <!-- Social Bar Ad - Fixed at bottom of viewport -->
+    <script>
+    (function() {
+        if (document.getElementById('fixed-social-bar-container')) return;
+        var container = document.createElement('div');
+        container.id = 'fixed-social-bar-container';
+        container.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; z-index: 999999; text-align: center; background: rgba(9, 38, 46, 0.95); padding: 5px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.3);';
+        var script = document.createElement('script');
+        script.src = 'https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js';
+        container.appendChild(script);
+        document.body.appendChild(container);
+    })();
+    </script>
     """, unsafe_allow_html=True)
-
-# Social Bar Ad - Fixed at bottom of viewport (injected into main page)
-st.markdown("""
-<script>
-(function() {
-    // Check if social bar already exists
-    if (document.getElementById('fixed-social-bar-container')) return;
-    
-    // Create container
-    var container = document.createElement('div');
-    container.id = 'fixed-social-bar-container';
-    container.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; z-index: 999999; text-align: center; background: rgba(9, 38, 46, 0.95); padding: 5px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.3);';
-    
-    // Create and load script
-    var script = document.createElement('script');
-    script.src = 'https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js';
-    container.appendChild(script);
-    
-    // Append to body
-    document.body.appendChild(container);
-})();
-</script>
-""", unsafe_allow_html=True)
 
 
 @st.cache_data(ttl=3600)
@@ -455,16 +525,17 @@ def main():
     
     # Title
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <h1 style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: #ffffff; font-size: 3.5rem; letter-spacing: 3px; margin-bottom: 0.5rem;">📚 PAST PAPER VAULT</h1>
-        <p style="font-family: 'Poppins', sans-serif; color: #db463b; font-size: 1rem; font-weight: 400; letter-spacing: 1px; margin-top: 0;">powered by <strong>Examlanka.lk</strong></p>
+    <div class="title-container" style="text-align: center; margin-bottom: 0.8rem;">
+        <h1 class="vault-title" style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: #ffffff; font-size: 3rem; letter-spacing: 3px; margin-bottom: 0.3rem;">📚 PAST PAPER VAULT</h1>
+        <p class="vault-subtitle" style="font-family: 'Poppins', sans-serif; color: #db463b; font-size: 0.85rem; font-weight: 400; letter-spacing: 1px; margin-top: 0;">powered by <strong>Examlanka.lk</strong></p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Native Banner Ad
+    # Native Banner Ad - Desktop only (hidden on mobile via CSS)
     import streamlit.components.v1 as components
+    st.markdown('<div class="native-banner-desktop">', unsafe_allow_html=True)
     components.html("""
-    <div style="text-align: center; margin: 1.5rem auto; max-width: 100%;">
+    <div style="text-align: center; margin: 0.5rem auto; max-width: 100%;">
         <script>
           atOptions = {
             'key' : '8147f01382ece9e1740ef1187319a8b7',
@@ -476,7 +547,8 @@ def main():
         </script>
         <script src="https://levitydinerdowny.com/8147f01382ece9e1740ef1187319a8b7/invoke.js"></script>
     </div>
-    """, height=150)
+    """, height=100)
+    st.markdown('</div>', unsafe_allow_html=True)
     
     # Check for bot token
     try:
@@ -560,8 +632,8 @@ def main():
                     <div class="pdf-tile">
                         <div class="pdf-icon">{get_pdf_icon_svg()}</div>
                         <div class="pdf-name">{display_name}</div>
-                        <div style='text-align:center; margin-top:6px;'>
-                            <span style='background-color: rgba(219, 70, 59, 0.2); color: #db463b; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;'>Match: {match_score:.1f}%</span>
+                        <div style='text-align:center; margin-top:4px;'>
+                            <span class="match-badge" style='background-color: rgba(219, 70, 59, 0.2); color: #db463b; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;'>Match: {match_score:.1f}%</span>
                         </div>
                     </div>
                     """
@@ -592,19 +664,40 @@ def main():
                                 file_content, error = get_telegram_file_content(file_id, bot_token)
                                 st.session_state.download_cache[cache_key] = (file_content, error)
                                 st.rerun()
+                
+                # Show native banner ad after first row (3 items) - Mobile only
+                if idx == 2:
+                    st.markdown('<div class="native-banner-mobile">', unsafe_allow_html=True)
+                    components.html("""
+                    <div style="text-align: center; margin: 0.5rem auto; max-width: 100%;">
+                        <script>
+                          atOptions = {
+                            'key' : '8147f01382ece9e1740ef1187319a8b7',
+                            'format' : 'iframe',
+                            'height' : 90,
+                            'width' : 728,
+                            'params' : {}
+                          };
+                        </script>
+                        <script src="https://levitydinerdowny.com/8147f01382ece9e1740ef1187319a8b7/invoke.js"></script>
+                    </div>
+                    """, height=100)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    # Reset columns after ad
+                    cols = st.columns(num_cols)
         else:
             st.markdown("""
-            <div style="text-align: center; padding: 3rem; color: #ffffff;">
-                <h2 style="font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; margin-bottom: 1rem;">🔍 No Results Found</h2>
-                <p style="font-family: 'Poppins', sans-serif; font-size: 1.1rem;">Try a different search query</p>
+            <div class="no-results" style="text-align: center; padding: 2rem 1rem; color: #ffffff;">
+                <h2 style="font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; margin-bottom: 1rem;">🔍 No Results Found</h2>
+                <p style="font-family: 'Poppins', sans-serif; font-size: 1rem;">Try a different search query</p>
             </div>
             """, unsafe_allow_html=True)
     else:
         # Welcome message
         st.markdown("""
-        <div style="text-align: center; padding: 3rem; color: #ffffff;">
-            <h2 style="font-family: 'Barlow Condensed', sans-serif; font-size: 2.5rem; margin-bottom: 1rem; letter-spacing: 2px;">Welcome to Past Paper Vault</h2>
-            <p style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">Search for past papers by subject, year, or school</p>
+        <div class="welcome-text" style="text-align: center; padding: 2rem 1rem; color: #ffffff;">
+            <h2 style="font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; margin-bottom: 1rem; letter-spacing: 2px;">Welcome to Past Paper Vault</h2>
+            <p style="font-family: 'Poppins', sans-serif; font-size: 1rem; margin-bottom: 1.5rem; opacity: 0.9;">Search for past papers by subject, year, or school</p>
         </div>
         """, unsafe_allow_html=True)
         
