@@ -426,6 +426,22 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
+    # Native Banner Ad
+    st.markdown("""
+    <div style="text-align: center; margin: 1.5rem auto; max-width: 100%;">
+        <script>
+          atOptions = {
+            'key' : '8147f01382ece9e1740ef1187319a8b7',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script src="https://levitydinerdowny.com/8147f01382ece9e1740ef1187319a8b7/invoke.js"></script>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Check for bot token
     try:
         bot_token = st.secrets.get("TELEGRAM_BOT_TOKEN")
@@ -590,6 +606,13 @@ def main():
             st.metric("Unique Files", unique_count)
         with col3:
             st.metric("Status", "🟢 Active")
+    
+    # Social Bar Ad at bottom
+    st.markdown("""
+    <div style="text-align: center; margin-top: 3rem;">
+        <script src="https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js"></script>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
