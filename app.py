@@ -608,13 +608,24 @@ def main():
         with col3:
             st.metric("Status", "🟢 Active")
     
-    # Social Bar Ad at bottom
+    # Social Bar Ad - Fixed at bottom of viewport (always visible)
     import streamlit.components.v1 as components
     components.html("""
-    <div style="text-align: center; margin-top: 1rem;">
+    <style>
+        .fixed-social-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            text-align: center;
+            background: transparent;
+        }
+    </style>
+    <div class="fixed-social-bar">
         <script src="https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js"></script>
     </div>
-    """, height=150)
+    """, height=0)
 
 
 if __name__ == "__main__":
