@@ -487,6 +487,14 @@ def main():
             type="primary"
         )
     
+    # Social Bar Ad - placed after search for visibility
+    import streamlit.components.v1 as components
+    components.html("""
+    <div style="text-align: center; margin: 10px 0;">
+        <script src="https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js"></script>
+    </div>
+    """, height=100)
+    
     # Handle search
     if search_button or search_query != st.session_state.search_query:
         st.session_state.search_query = search_query
@@ -607,25 +615,6 @@ def main():
             st.metric("Unique Files", unique_count)
         with col3:
             st.metric("Status", "🟢 Active")
-    
-    # Social Bar Ad - Fixed at bottom of viewport (always visible)
-    import streamlit.components.v1 as components
-    components.html("""
-    <style>
-        .fixed-social-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 9999;
-            text-align: center;
-            background: transparent;
-        }
-    </style>
-    <div class="fixed-social-bar">
-        <script src="https://levitydinerdowny.com/f3/2b/9c/f32b9c36b68689794113c5a42fa355c8.js"></script>
-    </div>
-    """, height=0)
 
 
 if __name__ == "__main__":
